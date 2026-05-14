@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Ludo.Ads;
+using Ludo.Core;
 
 namespace Ludo.Local
 {
@@ -227,6 +229,9 @@ namespace Ludo.Local
             crt.sizeDelta = new Vector2(900, 60);
             crt.anchoredPosition = new Vector2(0, 80);
             AddText(creditGO, "Tap a token to move it on your turn", 36, new Color(1f, 1f, 1f, 0.5f));
+
+            // Banner ad on the menu (no-op until AdMob SDK is imported + ENABLE_ADMOB defined)
+            if (ServiceLocator.TryGet<AdManager>(out var ad)) ad.ShowBanner();
         }
 
         private LocalLudoEngine.PlayerInfo[] MakePlayers(int mode)
@@ -265,6 +270,12 @@ namespace Ludo.Local
 
         private void StartMatch(LocalLudoEngine.PlayerInfo[] players)
         {
+            // Hide menu banner before entering gameplay (avoid ads on top of board)
+            if (ServiceLocator.TryGet<AdManager>(out var ad))
+            {
+                ad.HideBanner();
+                ad.SetGameplayLocked(true);   // suppress interstitials mid-match
+            }
             _players = players;
             _engine = new LocalLudoEngine(players);
             ShowGame();
@@ -694,6 +705,10 @@ namespace Ludo.Local
         // RESULT SCREEN
         // ============================================================
 
+        private int _coinsEarned;
+        private bool _rewardClaimed;
+        private Text _coinsLabel;
+
         private void ShowResult()
         {
             _screen = ScreenKind.Result;
@@ -711,19 +726,76 @@ namespace Ludo.Local
             var trt = (RectTransform)titleGO.transform;
             trt.anchorMin = trt.anchorMax = new Vector2(0.5f, 0.5f);
             trt.sizeDelta = new Vector2(900, 180);
-            trt.anchoredPosition = new Vector2(0, 200);
+            trt.anchoredPosition = new Vector2(0, 260);
             AddText(titleGO, "GAME OVER", 120, Color.white);
 
             var txtGO = UI("Winner", _resultRoot.transform);
             var wrt = (RectTransform)txtGO.transform;
             wrt.anchorMin = wrt.anchorMax = new Vector2(0.5f, 0.5f);
             wrt.sizeDelta = new Vector2(900, 120);
-            wrt.anchoredPosition = new Vector2(0, 40);
+            wrt.anchoredPosition = new Vector2(0, 100);
             _resultText = AddText(txtGO, $"{winnerName} ({SeatName(winner)}) wins!", 72, BoardCells.SeatColors[winner]);
 
-            MakeButton(_resultRoot.transform, "Play Again", new Vector2(500, 160), new Vector2(0, -200), new Color(0.20f, 0.72f, 0.30f), () => StartMatch(_players));
-            MakeButton(_resultRoot.transform, "Main Menu",  new Vector2(500, 160), new Vector2(0, -400), new Color(0.4f, 0.4f, 0.4f), ShowMenu);
+            // Coins reward (visual only — wire to backend later)
+            _coinsEarned = (winner == 0) ? 100 : 25;
+            _rewardClaimed = false;
+            var coinsGO = UI("Coins", _resultRoot.transform);
+            var crt = (RectTransform)coinsGO.transform;
+            crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
+            crt.sizeDelta = new Vector2(900, 80);
+            crt.anchoredPosition = new Vector2(0, 0);
+            _coinsLabel = AddText(coinsGO, $"+{_coinsEarned} coins", 56, new Color(1f, 0.85f, 0.2f));
+
+            // Rewarded ad: double your coins
+            MakeButton(_resultRoot.transform, "Watch Ad → 2x Coins",
+                new Vector2(620, 140), new Vector2(0, -120),
+                new Color(1f, 0.55f, 0.05f),
+                OnDoubleCoinsClicked);
+
+            MakeButton(_resultRoot.transform, "Play Again", new Vector2(500, 160), new Vector2(0, -300), new Color(0.20f, 0.72f, 0.30f), OnPlayAgainClicked);
+            MakeButton(_resultRoot.transform, "Main Menu",  new Vector2(500, 160), new Vector2(0, -480), new Color(0.4f, 0.4f, 0.4f), OnMainMenuClicked);
+
+            // Re-enable interstitials now that gameplay is done.
+            if (ServiceLocator.TryGet<AdManager>(out var ad)) ad.SetGameplayLocked(false);
         }
+
+        private void OnDoubleCoinsClicked()
+        {
+            if (_rewardClaimed) return;
+            if (!ServiceLocator.TryGet<AdManager>(out var ad))
+            {
+                // No ad provider → grant a smaller bonus so the button still feels useful.
+                _rewardClaimed = true;
+                _coinsEarned += _coinsEarned;
+                _coinsLabel.text = $"+{_coinsEarned} coins";
+                return;
+            }
+            ad.ShowRewarded(success =>
+            {
+                if (!success) return;
+                _rewardClaimed = true;
+                _coinsEarned *= 2;
+                if (_coinsLabel != null) _coinsLabel.text = $"+{_coinsEarned} coins";
+            });
+        }
+
+        private void OnPlayAgainClicked()
+        {
+            // Show interstitial between matches (skipped if not loaded — never blocks).
+            if (ServiceLocator.TryGet<AdManager>(out var ad))
+                ad.ShowInterstitial(() => StartMatch(_players));
+            else
+                StartMatch(_players);
+        }
+
+        private void OnMainMenuClicked()
+        {
+            if (ServiceLocator.TryGet<AdManager>(out var ad))
+                ad.ShowInterstitial(ShowMenu);
+            else
+                ShowMenu();
+        }
+
 
         // ============================================================
         // UTIL

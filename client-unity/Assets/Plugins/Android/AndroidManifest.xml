@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Custom AndroidManifest for the Ludo app.
+
+  - Internet permission: required by Socket.IO (online mode) and AdMob.
+  - ACCESS_NETWORK_STATE: AdMob uses it for low-bandwidth detection.
+  - meta-data com.google.android.gms.ads.APPLICATION_ID:
+      Required by Google Mobile Ads SDK. The value below is Google's
+      OFFICIAL TEST app ID — using it is safe and won't get banned.
+      Replace with your real AdMob App ID before Play Store release.
+
+  To use this file: in Unity, Project Settings → Player →
+  Publishing Settings → tick "Custom Main Manifest" — Unity then merges
+  this with its default manifest. (Or leave it as a Plugins/Android
+  override; both work for our needs.)
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+        <!-- AdMob App ID. Test value is fine for development; replace before publishing. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
+        <!-- Optimise: don't delay app launch on AdMob init -->
+        <meta-data
+            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
+            android:value="true" />
+
+        <activity
+            android:name="com.unity3d.player.UnityPlayerActivity"
+            android:theme="@style/UnityThemeSelector"
+            tools:replace="android:theme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+        </activity>
+    </application>
+</manifest>
