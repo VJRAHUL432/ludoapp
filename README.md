@@ -1,8 +1,11 @@
-# Ludo App — Production-Ready Android Multiplayer Ludo Game
+# Ludo App — Android Multiplayer Ludo Game
 
 A modular, scalable, server-authoritative Ludo game for Android, inspired by Ludo King.
 
-> **Status:** Production-ready foundation scaffold. Includes a fully working Node.js backend (Socket.IO, Postgres, Redis, server-authoritative Ludo engine, matchmaking, private rooms, JWT auth) and the complete Unity C# client architecture (managers, networking, AI, object pooling, ads, audio, error handling). Art, scenes, and prefabs are added inside Unity.
+> **Status:**
+> - ✅ **Offline gameplay (vs Bot, 2P local, 4P local) is complete and APK-buildable.** Open `client-unity/` in Unity 2022.3 LTS, switch to Android, click Build. See [`client-unity/README.md`](./client-unity/README.md).
+> - ✅ Online multiplayer **backend** is complete: Node.js + Express + Socket.IO + Postgres + Redis, server-authoritative engine, matchmaking, private rooms, reconnect, JWT auth.
+> - 🟡 Online multiplayer **client wiring** (Socket.IO library + transport adapter) is left as a follow-up — pick a C# Socket.IO library and implement `ISocketTransport` in `client-unity/Assets/Scripts/Networking/SocketClient.cs`.
 
 ---
 
