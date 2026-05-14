@@ -1,0 +1,14 @@
+{
+  "apiBaseUrl": "https://api.example.com",
+  "socketUrl": "https://api.example.com",
+  "heartbeatIntervalMs": 5000,
+  "maxMissedHeartbeats": 3,
+  "reconnectInitialDelayMs": 500,
+  "reconnectMaxDelayMs": 8000,
+  "actionTimeoutMs": 8000,
+  "enableAdmob": false,
+  "androidAdmobAppId": "",
+  "androidBannerAdUnitId": "",
+  "androidInterstitialAdUnitId": "",
+  "androidRewardedAdUnitId": ""
+}
