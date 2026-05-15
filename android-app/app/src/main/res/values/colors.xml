@@ -1,0 +1,9 @@
+<resources>
+    <color name="seat_red">#EB3338</color>
+    <color name="seat_green">#33B84C</color>
+    <color name="seat_yellow">#F5C729</color>
+    <color name="seat_blue">#2E72EA</color>
+    <color name="bg_dark">#101218</color>
+    <color name="bg_card">#1B1F2A</color>
+    <color name="text_white">#FFFFFF</color>
+</resources>

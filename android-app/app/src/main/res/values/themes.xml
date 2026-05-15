@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Ludo" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#101218</item>
+        <item name="android:navigationBarColor">#101218</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+    </style>
+</resources>

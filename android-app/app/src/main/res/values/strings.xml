@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Ludo</string>
+    <string name="play_vs_bot">Play vs Bot</string>
+    <string name="play_2p">2 Players Local</string>
+    <string name="play_4p">4 Players Local</string>
+    <string name="roll">ROLL</string>
+    <string name="play_again">Play Again</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="watch_ad_double">Watch Ad → 2x Coins</string>
+    <string name="game_over">GAME OVER</string>
+</resources>
